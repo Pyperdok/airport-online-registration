@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import render_template
 import psycopg2
 from werkzeug.routing import BaseConverter
 
@@ -10,6 +11,8 @@ app = Flask(__name__)
 class UUID(BaseConverter):
     regex = r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
 app.url_map.converters['uuid'] = UUID
+
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def get_db_connection():
     conn = psycopg2.connect('postgresql://postgres:12345678@localhost:5432/airport')
@@ -46,11 +49,21 @@ def get_passenger(id) -> str:
 
 @app.route('/api/bookings/<uuid:id>')
 def choose_seat(id):
-    pass
+    return render_template('main.html')
 
 @app.route('/api/bookings/<uuid:id>')
 def register(id):
-    pass
+    return render_template('main.html')
+
+@app.route('/')
+def main():
+    return render_template('main.html')
+
+@app.route('/booking')
+def booking():
+    print(request.args['flight'])
+    # get_flight()
+    return render_template('booking.html')
 
 if __name__ == '__main__':
     app.run(debug=False, port=3400)

@@ -1,0 +1,18 @@
+{% extends "__layout.html" %}
+{% block layout %}
+<div class="block" style="margin: 25% 25%;">
+  <div class="input-group">
+    <input id="booking_id" type="text" class="form-control" placeholder="Booking number" aria-label="Recipient's username"
+      aria-describedby="basic-addon2">
+    <div class="input-group-append">
+      <button onclick="get_flight()" class="btn btn-primary" type="button">Найти</a>
+    </div>
+  </div>
+</div>
+<script>
+  function get_flight(bu) {
+    const input = document.getElementById('booking_id')
+    window.location = `/booking?flight=${input.value}`
+  }
+</script>
+{% endblock %}
