@@ -1,32 +1,50 @@
 {% extends "__layout.html" %}
 {% block layout %}
-    <div class="block" style="margin: 15% 25%;">
-        <div class="flight-info" style="background: gray;">
-            <div class="row" style="display: flex;">
-                <div style="width: 0; flex-grow: 1;">Номер рейса</div>
-                <div style="width: 0; flex-grow: 1;">1</div>
-            </div>
-            <div class="row" style="display: flex;">
-                <div style="width: 0; flex-grow: 1;">Название компании</div>
-                <div style="width: 0; flex-grow: 1;">2</div>
-            </div>
-            <div class="row" style="display: flex;">
-                <div style="width: 0; flex-grow: 1;">Номер рейса</div>
-                <div style="width: 0; flex-grow: 1;">3</div>
-            </div>
-            <div class="row" style="display: flex;">
-                <div style="width: 0; flex-grow: 1;">Номер рейса</div>
-                <div style="width: 0; flex-grow: 1;">4</div>
-            </div>
-            <div class="row" style="display: flex;">
-                <div style="width: 0; flex-grow: 1;">Номер рейса</div>
-                <div style="width: 0; flex-grow: 1;">5</div>
-            </div>
-            <div class="row text-center">
-                <button class="btn btn-primary text-center" type="button">Начать
-                    регистрацию</button>
-            </div>
+<div class="block" style="margin: 15% 25%;">
+    <div class="flight-info" style="background: gray;">
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Номер рейса</div>
+            <div style="width: 0; flex-grow: 1;">{{context.id}}</div>
+        </div>
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Название компании</div>
+            <div style="width: 0; flex-grow: 1;">{{context.company}}</div>
+        </div>
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Маршрут</div>
+            <div style="width: 0; flex-grow: 1;">{{context.path}}</div>
+        </div>
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Аэропорт отправления</div>
+            <div style="width: 0; flex-grow: 1;">{{context.from}}</div>
+        </div>
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Аэропорт прибытия</div>
+            <div style="width: 0; flex-grow: 1;">{{context.to}}</div>
+        </div>
 
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Время отправления</div>
+            <div style="width: 0; flex-grow: 1;">{{context.timefrom}}</div>
+        </div>
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Время прибытия</div>
+            <div style="width: 0; flex-grow: 1;">{{context.timeto}}</div>
+        </div>
+
+        <div class="row" style="display: flex;">
+            <div style="width: 0; flex-grow: 1;">Пассажир</div>
+            <div style="width: 0; flex-grow: 1;">{{context.firstname}} {{context.lastname}} {{context.patronymic}}</div>
+        </div>
+        <div class="row text-center">
+            <button onclick="start_registration()" class="btn btn-primary text-center" type="button">Начать
+                регистрацию</button>
         </div>
     </div>
+</div>
+<script>
+    function start_registration() {
+        window.location = '/passport?flight={{context.id}}'
+    }
+</script>
 {% endblock %}
