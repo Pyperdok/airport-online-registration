@@ -66,10 +66,25 @@ def finish_registration(id) -> str:
         data = request.get_json()
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute(f"SELECT COUNT(*) from bookings where id = '{id}' and seat = {data['seat']}")
+        cursor.execute(f"""SELECT "flightId" from bookings where id = '{id}'""")
         res = cursor.fetchone()
-        if res is None:
-            cursor.execute(f"UPDATE bookings SET seat = '{data['seat']}' where id = '{id}'")
+        if res:
+            flightId = res[0]
+            cursor.execute(f"""SELECT seat from bookings where "flightId" = '{flightId}' and seat is not null""")
+            res = cursor.fetchall()
+            seats = []
+            for s in res:
+                seats.append(s[0])
+            
+        # get flightId 
+        # select seat from bookings where flightid = Flightid
+        # to arr seats
+        # check if cointain 
+        # cursor.execute(f"SELECT COUNT(*) from bookings where id = '{id}' and seat = {data['seat']}")
+        # res = cursor.fetchone()
+        # if res is None:
+        #     cursor.execute(f"UPDATE bookings SET seat = '{data['seat']}' where id = '{id}'")
+    return ''
             
      
 
@@ -85,17 +100,20 @@ def booking():
     return render_template('booking.html', context=context)
 
 @app.route('/seat')
-def choose_seat():
+def seat():
     context = {}
-    context['id'] = request.args['flight']
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute(f"select seat from bookings where id = '{context['id']}'")
-    raw = cursor.fetchone()
-    for i,c in enumerate(cursor.description): 
-        context[c.name] = str(raw[i])
-    if context['seat'] == "None":
-        context['seat'] = random.randint(1, 255)
+    context['id'] = request.args['flight']
+    cursor.execute(f"""SELECT "flightId" from bookings where id = '{context['id']}'""")
+    res = cursor.fetchone()
+    flightId = res[0]
+    cursor.execute(f"""select seat from bookings where "flightId" = '{flightId}'""")
+    raw = cursor.fetchall()
+    context['seats'] = [True]*256
+    for s in raw:
+        context['seats'][s[0]] = False
+    print(context['seats'])
     return render_template('seat.html', context=context)
 
 @app.route('/')
