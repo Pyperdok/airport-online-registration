@@ -15,11 +15,13 @@ app.url_map.converters['uuid'] = UUID
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
+#Создает соединение с БД
 def get_db():
     conn = psycopg2.connect('postgresql://postgres:12345678@localhost:5432/airport')
     conn.set_client_encoding('UTF8')
     return conn
 
+#Ищет по номеру бронирования рейс и пассажира
 @app.route('/api/bookings/<uuid:id>')
 def get_flight(id) -> str:
     db = get_db()
@@ -36,6 +38,7 @@ ON "flightId" = flights.id""")
         result[c.name] = str(raw[i])
     return result
 
+#Ищет пассажира по его ID
 @app.route('/api/passengers/<uuid:id>')
 def get_passenger(id) -> str:
     conn = get_db()
@@ -44,6 +47,7 @@ def get_passenger(id) -> str:
     res = cursor.fetchone()
     return res
 
+#Проверяет паспортные данные введенные пассажиром
 @app.route('/api/passengers/validate', methods=['POST'])
 def validate_passenger() -> str:
     if request.method == 'POST':
@@ -60,6 +64,7 @@ series = '{data['series']}'""")
             return 'True'
     return 'False'
 
+#Завершает регистрацию пассажира, изменяя его статус регистрации
 @app.route('/api/bookings/<uuid:id>', methods=['POST'])
 def finish_registration(id) -> str:
     if request.method == 'POST':
@@ -87,18 +92,20 @@ def finish_registration(id) -> str:
     return ''
             
      
-
+#Возвращает форму для ввода паспортных данных
 @app.route('/passport')
 def passport():
     context = {}
     context['id'] = request.args['flight']
     return render_template('passport.html', context=context)
 
+#Возвращает интерфейс для начала регистрации
 @app.route('/booking')
 def booking():
     context = dict(get_flight(request.args['flight']))
     return render_template('booking.html', context=context)
 
+#Возвращает форму для выбора места
 @app.route('/seat')
 def seat():
     context = {}
@@ -116,6 +123,7 @@ def seat():
     print(context['seats'])
     return render_template('seat.html', context=context)
 
+#Возвращает форму для ввода номера бронирования (Начальная страница)
 @app.route('/')
 def main():
     return render_template('main.html')
