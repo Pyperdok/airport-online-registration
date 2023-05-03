@@ -1,10 +1,10 @@
-from flask import Flask
+from flask import Flask, send_file, send_from_directory
 from flask import request
 from flask import render_template
 import psycopg2
 from werkzeug.routing import BaseConverter
 import random
-
+import os
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODEARRAY)
 
@@ -71,25 +71,15 @@ def finish_registration(id) -> str:
         data = request.get_json()
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT "flightId" from bookings where id = '{id}'""")
-        res = cursor.fetchone()
-        if res:
-            flightId = res[0]
-            cursor.execute(f"""SELECT seat from bookings where "flightId" = '{flightId}' and seat is not null""")
-            res = cursor.fetchall()
-            seats = []
-            for s in res:
-                seats.append(s[0])
-            
-        # get flightId 
-        # select seat from bookings where flightid = Flightid
-        # to arr seats
-        # check if cointain 
-        # cursor.execute(f"SELECT COUNT(*) from bookings where id = '{id}' and seat = {data['seat']}")
-        # res = cursor.fetchone()
-        # if res is None:
-        #     cursor.execute(f"UPDATE bookings SET seat = '{data['seat']}' where id = '{id}'")
-    return ''
+        sql = f"""UPDATE bookings SET ("isRegistered", "seat") = ('True', '{int(data['seat'])}') where id = '{id}'"""
+        cursor.execute(sql)
+        conn.commit()
+        routeList = get_flight(id)
+        with open(f'./{id}', 'w') as f:
+            f.write(str(routeList))
+        cursor.close()
+    
+    return 'True'
             
      
 #Возвращает форму для ввода паспортных данных
@@ -127,6 +117,16 @@ def seat():
 @app.route('/')
 def main():
     return render_template('main.html')
+
+@app.route('/route')
+def route():
+    context = {}
+    context['id'] = request.args['flight']
+    return render_template('route.html', context=context)
+
+@app.route('/download/<uuid:id>')
+def download(id):
+    return send_file(f'./{id}')
 
 if __name__ == '__main__':
     app.run(debug=False, port=3400)

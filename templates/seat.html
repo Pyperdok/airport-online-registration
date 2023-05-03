@@ -30,7 +30,9 @@ function finish() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({'seat': seat})
   })
-  //TODO обработать завершение реги
+  .then(r => {
+    window.location = '/route?flight={{context.id}}'
+  })
 }
 </script>
 {% endblock %}
