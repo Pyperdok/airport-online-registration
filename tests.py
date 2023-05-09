@@ -1,6 +1,10 @@
 import app
 import requests
 from selenium import webdriver
+import re
+
+def test_uuid_regex():
+    assert re.match(app.UUID.regex, '123e4567-e89b-12d3-a456-426655440000') is not None
 
 def test_db_connection():
     try:
@@ -8,7 +12,7 @@ def test_db_connection():
     except app.psycopg2.OperationalError as e:
         print(f'Connection failed {e.pgcode}')
 
-def test_root():
+def test_app():
     assert requests.get('http://localhost:3400').status_code == 200
 
 def test_browser():
